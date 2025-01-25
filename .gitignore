@@ -1,0 +1,54 @@
+# Bytecode do Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Ambientes virtuais
+env/
+venv/
+ENV/
+.venv/
+.Python
+
+# Configurações de IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Arquivos de log
+*.log
+logs/
+
+# Testes temporários
+.tox/
+.cache/
+.coverage
+*.cover
+nosetests.xml
+coverage.xml
+*.pytest_cache/
+
+# Build e distribuição
+build/
+dist/
+*.egg-info/
+.eggs/
+*.manifest
+*.spec
+
+# Dependências criadas durante o runtime
+*.db
+*.sqlite3
+
+# Dados temporários e outros artefatos
+*.tmp
+*.temp
+*.bak
+
+# Arquivos gerados pelo Jupyter Notebook
+.ipynb_checkpoints/
+
+# Arquivos criados pelo sistema operacional
+.DS_Store
+Thumbs.db
