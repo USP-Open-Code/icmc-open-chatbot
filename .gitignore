@@ -1,26 +1,29 @@
-# Bytecode do Python
+# Random Files
+sketch/
+
+# Python bytecode
 __pycache__/
 *.py[cod]
 *.pyo
 
-# Ambientes virtuais
+# Virtual environments
 env/
 venv/
 ENV/
 .venv/
 .Python
 
-# Configurações de IDEs
+# IDE configurations
 .idea/
 .vscode/
 *.swp
 *.swo
 
-# Arquivos de log
+# Log files
 *.log
 logs/
 
-# Testes temporários
+# Temporary test files
 .tox/
 .cache/
 .coverage
@@ -29,7 +32,7 @@ nosetests.xml
 coverage.xml
 *.pytest_cache/
 
-# Build e distribuição
+# Build and distribution
 build/
 dist/
 *.egg-info/
@@ -37,18 +40,18 @@ dist/
 *.manifest
 *.spec
 
-# Dependências criadas durante o runtime
+# Runtime generated dependencies
 *.db
 *.sqlite3
 
-# Dados temporários e outros artefatos
+# Temporary data and other artifacts
 *.tmp
 *.temp
 *.bak
 
-# Arquivos gerados pelo Jupyter Notebook
+# Jupyter Notebook generated files
 .ipynb_checkpoints/
 
-# Arquivos criados pelo sistema operacional
+# OS generated files
 .DS_Store
 Thumbs.db
