@@ -1,13 +1,15 @@
 from fastapi import APIRouter, status, Request, Depends
 
 from src.api.models import APIResponse, APIRequest
-from src.api.controllers import chat_new_message
+from src.api.controllers import chat_new_message, Guardrail
 
 
 router = APIRouter(
     prefix="/chat",
     tags=["chat"],
-    # dependencies=[Depends(validate_user)]
+    dependencies=[
+        Depends(Guardrail())
+    ]
 )
 
 

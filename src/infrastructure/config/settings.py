@@ -25,6 +25,9 @@ class Settings(BaseSettings):
     MODEL_TEMPERATURE: float = 0.2
     MODEL_API_KEY: str = ''
 
+    # LlamaGuard
+    LLAMA_GUARD_MODEL: str = "llama-guard3"
+
     class Config:
         env_file = ".env"
         extra = "ignore"
