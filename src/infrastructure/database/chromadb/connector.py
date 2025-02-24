@@ -1,5 +1,8 @@
 import uuid
 import chromadb
+from langchain_chroma import Chroma
+from langchain_ollama import OllamaEmbeddings
+
 from src.infrastructure.config import settings
 from typing import List, Optional
 
@@ -23,6 +26,40 @@ class ChromaDB:
             name=collection_name or self.collection
         )
         return self.collection
+
+    def as_retriever(self, collection_name: str = None) -> dict:
+        """
+        Método que consulta a vector store para consultar os documentos
+        que podem ajudar a responder a pergunta do usuário.
+        """
+        vector_store = Chroma(
+            client=self.client,
+            collection_name=collection_name or self.collection,
+            embedding_function=OllamaEmbeddings(model=settings.EMBEDDING_MODEL)
+        )
+        retriever = vector_store.as_retriever()
+
+        return {
+            "title": "Document Retriever",
+            "description": """
+                Método que consulta a vector store para consultar os documentos
+                que podem ajudar a responder a pergunta do usuário.
+                """,
+            "type": "object",
+            "properties": {
+                "search_type": {
+                    "type": "string",
+                    "description": "Type of search to perform",
+                    "enum": ["similarity", "mmr", "similarity_score_threshold"]
+                },
+                "k": {
+                    "type": "integer",
+                    "description": "Number of documents to retrieve",
+                    "default": 4
+                }
+            },
+            "retriever": retriever
+        }
 
     async def add_documents(
         self,
