@@ -1,14 +1,15 @@
 from .settings import settings
 
-from langchain_ollama.llms import OllamaLLM
+from langchain_ollama import ChatOllama
 from langchain_openai import ChatOpenAI
 
 
 class LLM:
-    def __new__(cls, model_name: str):
+    def __new__(cls):
+        model_name = settings.MODEL
         try:
             if model_name == "ollama":
-                return OllamaLLM(
+                return ChatOllama(
                     model=settings.MODEL_NAME,
                     base_url=settings.MODEL_URL,
                     temperature=settings.MODEL_TEMPERATURE
