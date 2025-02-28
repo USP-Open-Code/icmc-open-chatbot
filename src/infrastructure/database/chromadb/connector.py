@@ -2,7 +2,7 @@ import uuid
 import chromadb
 from langchain_chroma import Chroma
 from langchain_ollama import OllamaEmbeddings
-
+from langchain.tools import tool
 from src.infrastructure.config import settings
 from typing import List, Optional
 
@@ -11,9 +11,10 @@ class ChromaDB:
     def __init__(self):
         self.host = settings.CHROMA_HOST
         self.port = settings.CHROMA_PORT
-        self.collection = None
+        self.collection = settings.INDEX_NAME
         try:
             self.client = self._connect()
+            self.retriever = self._as_retriever()
         except Exception:
             raise ConnectionError("Failed to connect to ChromaDB")
 
@@ -27,11 +28,7 @@ class ChromaDB:
         )
         return self.collection
 
-    def as_retriever(self, collection_name: str = None) -> dict:
-        """
-        Método que consulta a vector store para consultar os documentos
-        que podem ajudar a responder a pergunta do usuário.
-        """
+    def _as_retriever(self, collection_name: str = None) -> dict:
         vector_store = Chroma(
             client=self.client,
             collection_name=collection_name or self.collection,
@@ -39,27 +36,23 @@ class ChromaDB:
         )
         retriever = vector_store.as_retriever()
 
-        return {
-            "title": "Document Retriever",
-            "description": """
-                Método que consulta a vector store para consultar os documentos
-                que podem ajudar a responder a pergunta do usuário.
-                """,
-            "type": "object",
-            "properties": {
-                "search_type": {
-                    "type": "string",
-                    "description": "Type of search to perform",
-                    "enum": ["similarity", "mmr", "similarity_score_threshold"]
-                },
-                "k": {
-                    "type": "integer",
-                    "description": "Number of documents to retrieve",
-                    "default": 4
-                }
-            },
-            "retriever": retriever
-        }
+        return retriever
+
+    @staticmethod
+    @tool("retriever")
+    def retrieve(query: str) -> List:
+        """
+        Método que faz uma requisição a vector store para consultar os
+        documentos que podem ajudar a responder a pergunta do usuário.
+
+        Args:
+            query (str): A query para a vector store.
+
+        Returns:
+            List[Document]: Uma lista de documentos recuperados
+        """
+        db = ChromaDB()
+        return db.retriever.invoke(query)
 
     async def add_documents(
         self,
