@@ -2,7 +2,6 @@ from typing import List
 from pymongo import MongoClient
 from pymongo.collection import Collection
 from pymongo.database import Database
-import os
 
 from src.infrastructure.config import settings
 
@@ -14,16 +13,21 @@ class MongoDB:
         Attributes:
             client (MongoClient): MongoDB client instance
             db (Database): Selected database instance
-            uri (str): MongoDB connection URI, defaults to localhost if MONGODB_URI env var not set
+            uri (str): MongoDB connection URI from env vars
         """
         self.client: MongoClient = None
-        self.db: Database = None
-        self.uri: str = os.getenv('MONGODB_URI', 'mongodb://localhost:27017')
+        self.db: Database = db_name or settings.MONGO_DB
+        if settings.MONGO_USER and settings.MONGO_PASSWORD:
+            self.uri = (f"mongodb://{settings.MONGO_USER}:"
+                        f"{settings.MONGO_PASSWORD}@"
+                        f"{settings.MONGO_HOST}:{settings.MONGO_PORT}")
+        else:
+            self.uri = f"mongodb://{settings.MONGO_HOST}:{settings.MONGO_PORT}"
 
         if self.check_connection():
-            self.connect(db_name or settings.MONGO_DB)
+            self.connect(settings.MONGO_DB)
 
-    async def check_connection(self) -> None:
+    def check_connection(self) -> bool:
         """Check MongoDB connection by sending a ping command.
 
         Raises:
@@ -32,11 +36,11 @@ class MongoDB:
         try:
             self.client = MongoClient(self.uri)
             self.client.admin.command('ping')
+            return True
         except Exception as error:
-            self.client = None
             raise Exception("Error connecting to MongoDB") from error
 
-    async def connect(self, db_name: str) -> None:
+    def connect(self, db_name: str) -> None:
         """Connect to MongoDB and select database.
 
         Args:
@@ -46,11 +50,9 @@ class MongoDB:
             Exception: If connection fails or database selection fails
         """
         try:
-            self.client = MongoClient(self.uri)
-            if db_name not in self.client.list_database_names():
-                raise ValueError(f"The database '{db_name}' does not exist!")
             self.db = self.client[db_name]
-
+            # Teste de conexão com o banco específico
+            self.db.command('ping')
         except Exception as error:
             raise ConnectionError(f"Failed to connect to database: {error}")
 
