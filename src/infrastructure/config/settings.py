@@ -11,12 +11,14 @@ class Settings(BaseSettings):
     MONGO_DB: str
 
     # ChromaDB
-    CHROMA_HOST: str = "localhost"
-    CHROMA_PORT: str = "8000"
+    CHROMA_HOST: str
+    CHROMA_PORT: int = 8000
     CHROMA_DB: str
+    INDEX_NAME: str
 
     # General Settings
     TIMEZONE: str = "America/Sao_Paulo"
+    API_PORT: int
 
     # LLM
     MODEL: str = "ollama"
@@ -24,6 +26,7 @@ class Settings(BaseSettings):
     MODEL_URL: str = "http://localhost:11434"
     MODEL_TEMPERATURE: float = 0.2
     MODEL_API_KEY: str = ''
+    EMBEDDING_MODEL: str = "llama3"
 
     # LlamaGuard
     LLAMA_GUARD_MODEL: str = "llama-guard3"
