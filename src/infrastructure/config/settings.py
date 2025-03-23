@@ -4,8 +4,6 @@ from pydantic_settings import BaseSettings
 class Settings(BaseSettings):
 
     # MongoDB
-    MONGO_USER: str
-    MONGO_PASSWORD: str
     MONGO_HOST: str = "localhost"
     MONGO_PORT: str = "27017"
     MONGO_DB: str
@@ -15,6 +13,9 @@ class Settings(BaseSettings):
     CHROMA_PORT: int = 8000
     CHROMA_DB: str
     INDEX_NAME: str
+    VECTOR_DIMENSION: int
+    CHUNK_SIZE: int
+    CHUNK_OVERLAP: int
 
     # General Settings
     TIMEZONE: str = "America/Sao_Paulo"
@@ -30,6 +31,7 @@ class Settings(BaseSettings):
 
     # LlamaGuard
     LLAMA_GUARD_MODEL: str = "llama-guard3"
+    BASE_URL: str
 
     class Config:
         env_file = ".env"

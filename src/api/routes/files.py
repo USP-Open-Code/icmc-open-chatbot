@@ -1,9 +1,9 @@
 from fastapi import (
     APIRouter,
-    HTTPException,
-    UploadFile,
     File,
+    HTTPException,
     Request,
+    UploadFile,
     status
 )
 
@@ -17,10 +17,7 @@ from src.api.controllers import (
 from src.api.models import FileMetadata, APIResponse
 
 
-router = APIRouter(
-    tags=["files"],
-    prefix="/files"
-)
+router = APIRouter(tags=["files"], prefix="/files")
 
 
 @router.get("/", status_code=status.HTTP_200_OK)
@@ -79,20 +76,13 @@ async def list_files(
 
 @router.put("/upload", status_code=status.HTTP_201_CREATED)
 async def upload_files(
-    # metadata: FileMetadata,
     req: Request,
-    file: UploadFile = File(...)
+    file: UploadFile = File(...),
 ) -> APIResponse:
-
-    # TO DO: receive metadata via body
-    metadata = FileMetadata(
-        collection_name="test",
-    )
-
     try:
         _ = await controller_upload_file(
-            metadata=metadata,
             file=file,
+            metadata=FileMetadata(),
             vector_store=req.app.vector_store,
         )
 

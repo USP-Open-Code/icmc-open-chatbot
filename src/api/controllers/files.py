@@ -1,21 +1,26 @@
-from fastapi import UploadFile
-
 from src.services.document_reader import DocumentReader
 from src.infrastructure.database import ChromaDB
+from src.infrastructure.config import settings
 from src.api.models import FileMetadata
+
+from fastapi import UploadFile
 
 
 async def controller_upload_file(
-    metadata: FileMetadata,
     file: UploadFile,
+    metadata: FileMetadata,
     vector_store: ChromaDB
 ):
     try:
         content = await DocumentReader.read_file(file)
+        metadata = metadata.model_dump()["metadata"]
+        metadata["extension"] = content["extension"]
+        metadata["file_name"] = content["name"]
+
         await vector_store.add_documents(
-            documents=[content["content"]],
-            collection_name=metadata.collection_name,
-            metadatas=[metadata.metadatas] if metadata.metadatas else None,
+            documents=content["content"],
+            collection_name=settings.INDEX_NAME,
+            metadatas=[metadata for _ in content["content"]],
         )
         return True
     except Exception as e:
