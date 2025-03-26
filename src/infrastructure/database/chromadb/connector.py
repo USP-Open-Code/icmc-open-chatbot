@@ -16,7 +16,8 @@ class ChromaDB:
         self.collection = None
         self.expected_dimension = settings.VECTOR_DIMENSION
         self.embedding_function = OllamaEmbeddings(
-            model=settings.EMBEDDING_MODEL
+            model=settings.EMBEDDING_MODEL,
+            base_url=settings.MODEL_URL
         )
         try:
             self.client = self._connect()
@@ -63,30 +64,6 @@ class ChromaDB:
         retriever = vector_store.as_retriever()
 
         return retriever
-
-    @staticmethod
-    @tool("retriever")
-    def retrieve(query: str) -> List:
-        """
-        Método que faz uma requisição a vector store para consultar os
-        documentos que podem ajudar a responder a pergunta do usuário.
-
-        Args:
-            query (str): A query para a vector store.
-
-        Returns:
-            List[Document]: Uma lista de documentos recuperados
-        """
-        try:
-            db = ChromaDB()
-            collections = db.client.list_collections()
-            if settings.INDEX_NAME not in collections:
-                return []
-
-            retriever = db._as_retriever(settings.INDEX_NAME)
-            return retriever.invoke(query)
-        except Exception as e:
-            raise e
 
     async def add_documents(
         self,
@@ -163,3 +140,55 @@ class ChromaDB:
     async def close(self):
         if self.client:
             self.client.reset()
+
+    @staticmethod
+    @tool("retriever")
+    def retrieve(query: str) -> List:
+        """
+        Método que faz uma requisição a vector store para consultar os
+        documentos que podem ajudar a responder a pergunta do usuário.
+
+        Args:
+            query (str): A query para a vector store.
+
+        Returns:
+            List[Document]: Uma lista de documentos recuperados
+        """
+        try:
+            db = ChromaDB()
+            retriever = db._as_retriever(settings.INDEX_NAME)
+            return retriever.invoke(query)
+        except Exception as e:
+            raise e
+
+    @staticmethod
+    @tool("most_recent_files")
+    def get_most_recent(n: int = 5) -> List:
+        """
+        Método que faz uma requisição a vector store para consultar os
+        arquivos que foram adicionados mais recentemente.
+
+        Args:
+            n (int): Quantidade de arquivos a serem retornados.
+
+        Returns:
+            List[dict]: Uma lista de dicionários contendo os arquivos.
+        """
+        try:
+            db = ChromaDB()
+            collection = db.client.get_collection(settings.INDEX_NAME)
+            results = collection.get() or []
+
+            created_at = [
+                (index, x["created_at"])
+                for index, x in enumerate(results.get("metadatas", []))
+            ]
+            created_at.sort(key=lambda x: x[1])
+
+            return [
+                {"page_content": results["documents"][index]}
+                for index, _ in created_at[-n:]
+            ]
+
+        except Exception as e:
+            raise ValueError(f"Erro ao buscar arquivos recentes: {e}")
