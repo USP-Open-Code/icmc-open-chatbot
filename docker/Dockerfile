@@ -1,4 +1,4 @@
-FROM python:3.13-slim-bullseye
+FROM python:3.13-slim
 
 ENV POETRY_HOME="/home/poetry"
 ENV VENV_PATH="/home/api/.venv"
