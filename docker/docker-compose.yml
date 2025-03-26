@@ -1,42 +1,56 @@
-version: '3.8'
-
 services:
-  api:
-    build:
-      context: ..
-      dockerfile: docker/Dockerfile
-    ports:
-      - "${API_PORT}:${API_PORT}"
-    depends_on:
-      mongodb:
-        condition: service_healthy
-    networks:
-      - app-network
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-    environment:
-      - BASE_URL=http://host.docker.internal:11434  # llama host
 
   mongodb:
     image: mongo:latest
+    env_file:
+      - ../.env
     ports:
       - "${MONGO_PORT}:${MONGO_PORT}"
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USER}
-      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
     volumes:
       - mongodb_data:/data/db
       - mongodb_config:/data/configdb
-    command: mongod --auth
+    command: mongod
     healthcheck:
-      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
-      interval: 10s
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:${MONGO_PORT}/test --quiet
+      interval: 3500s
       timeout: 5s
       retries: 5
       start_period: 10s
     restart: always
     networks:
       - app-network
+    attach: false
+
+  chroma:
+    image: chromadb/chroma:latest
+    env_file:
+      - ../.env
+    ports:
+      - "${CHROMA_PORT}:${CHROMA_PORT}"
+    volumes:
+      - chroma_data:/chroma/chroma
+    networks:
+      - app-network
+    restart: always
+    attach: false
+
+  api:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    env_file:
+      - ../.env
+    ports:
+      - "${API_PORT}:${API_PORT}"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      chroma:
+        condition: service_started
+    networks:
+      - app-network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
 networks:
   app-network:
@@ -46,4 +60,6 @@ volumes:
   mongodb_data:
     driver: local
   mongodb_config:
+    driver: local
+  chroma_data:
     driver: local
