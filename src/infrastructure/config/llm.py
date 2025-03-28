@@ -18,7 +18,6 @@ class LLM:
         elif model_name == "openai":
             model = ChatOpenAI(
                 model=settings.MODEL_NAME,
-                base_url=settings.MODEL_URL,
                 temperature=settings.MODEL_TEMPERATURE,
                 api_key=settings.MODEL_API_KEY
             )
