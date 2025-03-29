@@ -18,7 +18,7 @@ class CRAG:
         self.index_name = settings.INDEX_NAME
         self.build()
 
-    def invoke(self, message: str, model: ChatOpenAI | OllamaLLM):
+    async def invoke(self, message: str, model: ChatOpenAI | OllamaLLM):
         response = self.graph.invoke(
             {
                 "messages": [
@@ -28,8 +28,7 @@ class CRAG:
             }
         )
         return {
-            "messages": response["messages"],
-            "docs": response.get("docs", None),
+            "messages": response["messages"][-1].content,
         }
 
     def build(self):

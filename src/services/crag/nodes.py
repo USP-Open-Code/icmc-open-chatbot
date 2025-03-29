@@ -12,7 +12,10 @@ from .prompts import (
 class CustomToolNode:
     def __init__(self):
         self.db = ChromaDB()
-        self.tools = {"retriever": ChromaDB().retrieve}
+        self.tools = {
+            "retriever": ChromaDB().retrieve,
+            "most_recent_files": ChromaDB().get_most_recent
+        }
 
     def __call__(self, inputs: list):
         if messages := inputs.get("messages", []):
@@ -61,10 +64,14 @@ def grade_documents(state: AgentState):
         score = retrieval_grader_chain.invoke(
             {
                 "question": queries,
-                "document": d.page_content,
+                "document": (
+                    d.page_content
+                    if not isinstance(d, dict)
+                    else d["page_content"]
+                ),
                 "message": messages}
         )
-        if score.get("binary_score", None):
+        if score and score.binary_score == "yes":
             filtered_docs.append(d)
 
     return {
@@ -77,7 +84,9 @@ def grade_documents(state: AgentState):
 def agent(state: AgentState):
     LLM = state["model"]
     agent_msg = PromptTemplate.from_template(agent_prompt)
-    chain = agent_msg | LLM.bind_tools([ChromaDB().retrieve])
+    chain = agent_msg | LLM.bind_tools(
+        [ChromaDB().retrieve, ChromaDB().get_most_recent]
+    )
 
     return {
         "messages": [chain.invoke(input={"question": state["messages"][-1]})]
@@ -94,12 +103,12 @@ def generate(state: AgentState):
     LLM = state["model"]
     docs = state.get("docs", None)
     messages = state.get("messages", [])
-    query = state.get("query", None)
+    query = state.get("query", None) or messages[0].content
 
     if len(docs) >= 1 and isinstance(messages[-1], ToolMessage):
         answer_chain = (
             PromptTemplate(
-                input_variables=["question", "context", "message"],
+                input_variables=["query", "context", "message"],
                 template=generate_answer_prompt
             )
             | LLM
@@ -113,19 +122,12 @@ def generate(state: AgentState):
             }
         )
 
-        docs_context = [{
-            "file_name": d.metadata["filePathField"],
-            "page_content": d.page_content.replace("\n", "\n\n"),
-        } for d in docs]
-
         return {
             "messages": result,
-            "docs": docs_context
         }
 
     else:
         messages = [SystemMessage(content=no_generation)] + state["messages"]
         return {
             "messages": [LLM.invoke(messages)],
-            "docs": []
         }
