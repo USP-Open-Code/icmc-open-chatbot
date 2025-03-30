@@ -4,6 +4,7 @@ from src.api.models import APIResponse, APIRequest
 from src.api.controllers import Guardrail
 from src.api.controllers.crag import contr_new_message
 
+
 router = APIRouter(
     prefix="/crag",
     tags=["CRAG"],
@@ -20,15 +21,15 @@ async def new_message(api_request: APIRequest, req: Request) -> APIResponse:
             api_request.message,
             req.app.crag,
             req.app.llm,
-            req.app.vector_store
         )
         return APIResponse(
-            success=True,
-            message="Message created successfully",
-            data=response
+            status_code=status.HTTP_200_OK,
+            status_message="Message created successfully",
+            response=response
         )
+
     except Exception as e:
-        raise HTTPException(
+        return HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=str(e)
         )

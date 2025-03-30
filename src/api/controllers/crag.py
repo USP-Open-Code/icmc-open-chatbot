@@ -12,4 +12,4 @@ async def contr_new_message(
         message=message,
         model=llm
     )
-    return response[-1].content
+    return response["messages"]
