@@ -1,4 +1,4 @@
-# CRAG API (EM DESENVOLVIMENTO)
+# CRAG API
 
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
@@ -8,154 +8,42 @@
 ![LangGraph](https://img.shields.io/badge/LangGraph-007ACC?style=for-the-badge&logo=langgraph&logoColor=white)
 ![ChromaDB](https://img.shields.io/badge/ChromaDB-FFA500?style=for-the-badge&logo=prisma&logoColor=white)
 ![Llama](https://img.shields.io/badge/Llama-FF6B6B?style=for-the-badge&logo=meta&logoColor=white)
+![OpenAI](https://img.shields.io/badge/OpenAI-412991?style=for-the-badge&logo=openai&logoColor=white)
 
 ## Sobre o Projeto
 
-CRAG API é uma API RESTful desenvolvida para gerenciamento e processamento de documentos utilizando tecnologias modernas de processamento de linguagem natural e armazenamento vetorial.
+A CRAG API é uma aplicação conversacional baseada em um grafo que utiliza a técnica de Retrieval-Augmented Generation (RAG), com um nó adicional de correção. Antes de gerar uma resposta com base em um documento semanticamente semelhante, o sistema avalia seu contexto, garantindo maior precisão e coerência.
 
-## Tecnologias Principais
+O sistema adota uma arquitetura em camadas (Layered Architecture), utilizando FastAPI como framework principal para a API REST. O armazenamento é dividido entre ChromaDB, responsável pela gestão dos arquivos usados no RAG, e MongoDB, que armazena os logs da aplicação.
 
-- **Python**: Linguagem base do projeto
-- **FastAPI**: Framework web para construção da API
-- **MongoDB**: Banco de dados principal
-- **ChromaDB**: Banco de dados vetorial para armazenamento de embeddings
-- **LangChain**: Framework para desenvolvimento de aplicações com LLMs
-- **LangGraph**: Framework para construção de grafos de processamento de linguagem natural
-- **Docker**: Containerização da aplicação
+O processamento de linguagem natural é realizado por meio do LangChain e LangGraph, que orquestram os agentes e implementam a lógica baseada em grafos. Toda a infraestrutura é containerizada com Docker e Docker Compose, garantindo facilidade de implantação e escalabilidade.
 
-## Requisitos
+A API e os containers já estão configurados. Para iniciar a aplicação, basta executar:
 
-- Docker e Docker Compose
-- Ollama (Opcional)
-
-
-## Instalação
-
-1. Clone o repositório:
 ```bash
-git clone https://github.com/seu-usuario/crag-api.git
-cd crag-api
+# BUILDAR E EXECUTAR O PROJETO
+docker-compose -f docker/docker-compose.yml --env-file .env up --build
 ```
-
-2. Configure as variáveis de ambiente:
-```bash
-vim .env
-# Edite o arquivo .env com suas configurações
-```
-
-3. Inicie os serviços com Docker Compose:
-```bash
-docker-compose --env-file .env -f docker/docker-compose.yml up --build
-```
-
-## Estrutura do Projeto
-
-```
-crag-api/
-├── src/
-│   ├── api/
-│   │   ├── controllers/
-│   │   │   ├── chat.py
-│   │   │   ├── crag.py
-│   │   │   ├── files.py
-│   │   │   ├── guardrails.py
-│   │   │   └── __init__.py
-│   │   ├── models/
-│   │   │   ├── api.py
-│   │   │   ├── files.py
-│   │   │   └── __init__.py
-│   │   └── routes/
-│   │       ├── chat.py
-│   │       ├── crag.py
-│   │       ├── files.py
-│   │       └── __init__.py
-│   ├── infrastructure/
-│   │   ├── config/
-│   │   │   ├── llm.py
-│   │   │   ├── settings.py
-│   │   │   └── __init__.py
-│   │   └── database/
-│   │       ├── chromadb/
-│   │       │   ├── connector.py
-│   │       │   └── utils.py
-│   │       ├── mongodb/
-│   │       │   ├── connector.py
-│   │       │   ├── create_collection.js
-│   │       │   └── utils.py
-│   │       └── __init__.py
-│   ├── services/
-│   │   ├── crag/
-│   │   │   ├── graph.py
-│   │   │   ├── nodes.py
-│   │   │   ├── prompts.py
-│   │   │   ├── templates.py
-│   │   │   └── __init__.py
-│   │   ├── custom_chat/
-│   │   │   ├── chat.py
-│   │   │   ├── tools.py
-│   │   │   └── __init__.py
-│   │   ├── document_reader/
-│   │   │   ├── reader.py
-│   │   │   └── __init__.py
-│   │   └── llama_guard/
-│   │       ├── llama_guard.py
-│   │       └── __init__.py
-│   └── main.py
-├── docker/
-│   ├── Dockerfile
-│   └── docker-compose.yml
-├── boot.sh
-├── run.py
-├── pyproject.toml
-├── poetry.lock
-├── LICENSE
-└── README.md
-```
-
-## Uso
-
-A API estará disponível em `http://localhost:8000` após a inicialização.
-
-### Endpoints Principais
-
-- `POST /api/v1/documents`: Upload de documentos
-- `GET /api/v1/documents`: Listagem de documentos
-- `GET /api/v1/documents/{id}`: Busca de documento específico
-- `DELETE /api/v1/documents/{id}`: Remoção de documento
-
-## Desenvolvimento
-
-Para desenvolvimento local:
-
-1. Crie um ambiente virtual:
-```bash
-python -m venv venv
-source venv/bin/activate  # Linux/Mac
-# ou
-.\venv\Scripts\activate  # Windows
-```
-
-2. Instale as dependências:
-```bash
-pip install -r requirements.txt
-```
-
-## Contribuição
-
-1. Faça um fork do projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
-3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
-4. Push para a branch (`git push origin feature/AmazingFeature`)
-5. Abra um Pull Request
-
-## Licença
-
-Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+PS: Não se esqueça de alterar os [Prompts](src/services/crag/prompts.py).
 
 ## Autor
 
-- **Gustavo Mendonça Ortega**
+** @CuriousGu (Gustavo Mendonça Ortega) 🇧🇷**
 
-## Contato
+## Docs
+1. [Estrutura](docs/pt_br/ESTRUTURA.md)
+2. [Instalação](docs/pt_br/INSTALACAO.md)
+3. [Configurações](docs/pt_br/CONFIGURACAO.md)
+4. [Executar](docs/pt_br/EXECUTAR.md)
+5. [API](docs/pt_br/API.md)
+6. [Contribuição](docs/pt_br/CONTRIBUICAO.md)
 
-Para mais informações ou suporte, entre em contato através do email: gustavo_ortega@usp.br
+## Licença
+
+Este projeto está sob a licença MIT, sinta-se a vontade para usar. 
+
+Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+
+## Contatos
+- Email: gustavo_ortega@usp.br
+- Linkedin: [Gustavo M. Ortega](https://www.linkedin.com/in/gustavomendoncaortega/)
