@@ -17,12 +17,7 @@ class MongoDB:
         """
         self.client: MongoClient = None
         self.db: Database = db_name or settings.MONGO_DB
-        if settings.MONGO_USER and settings.MONGO_PASSWORD:
-            self.uri = (f"mongodb://{settings.MONGO_USER}:"
-                        f"{settings.MONGO_PASSWORD}@"
-                        f"{settings.MONGO_HOST}:{settings.MONGO_PORT}")
-        else:
-            self.uri = f"mongodb://{settings.MONGO_HOST}:{settings.MONGO_PORT}"
+        self.uri = f"mongodb://{settings.MONGO_HOST}:{settings.MONGO_PORT}"
 
         if self.check_connection():
             self.connect(settings.MONGO_DB)
@@ -51,7 +46,6 @@ class MongoDB:
         """
         try:
             self.db = self.client[db_name]
-            # Teste de conexão com o banco específico
             self.db.command('ping')
         except Exception as error:
             raise ConnectionError(f"Failed to connect to database: {error}")
@@ -135,7 +129,7 @@ class MongoDB:
         """Update a single document in a collection.
 
         Args:
-            collection_name (str): Name of the collection containing the document
+            collection_name (str): Name of the collection
             filter_query (dict): Query to find document to update
             update (dict): Update operations to apply
 
@@ -152,7 +146,7 @@ class MongoDB:
         """Delete a single document from a collection.
 
         Args:
-            collection_name (str): Name of the collection containing the document
+            collection_name (str): Name of the collection
             filter_query (dict): Query to find document to delete
 
         Raises:
