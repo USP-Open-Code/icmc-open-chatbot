@@ -5,7 +5,7 @@ from pydantic import BaseModel
 class APIResponse(BaseModel):
     status_code: int
     status_message: Optional[str] = None
-    response: Optional[dict] = None
+    response: Optional[dict] | str = None
 
 
 class APIRequest(BaseModel):
