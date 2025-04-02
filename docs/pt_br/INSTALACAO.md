@@ -78,7 +78,7 @@ Para verificar se a instalação foi bem-sucedida:
 
 2. Verifique os logs dos containers:
    ```bash
-   docker compose -f docker/docker-compose.yml logs -f
+   docker-compose -f docker/docker-compose.yml logs -f
    ```
 
 ### Suporte
