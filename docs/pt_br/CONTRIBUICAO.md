@@ -36,7 +36,7 @@ Agradecemos seu interesse em contribuir com o projeto CRAG API! Este documento f
 
 1. Crie uma branch seguindo o padrão:
    ```bash
-   git checkout -b feature/nome-da-feature
+   git checkout -b tipo-de-alteracao/nome-da-feature
    ```
    Possibilidades:
    - `fix`: para correções de bugs
@@ -48,12 +48,12 @@ Agradecemos seu interesse em contribuir com o projeto CRAG API! Este documento f
 2. Faça commits atômicos:
    ```bash
    git add .
-   git commit -m "feat: adiciona nova funcionalidade X"
+   git commit -m "[feat] adiciona nova funcionalidade X"
    ```
 
 3. Push para seu fork:
    ```bash
-   git push origin feature/nome-da-feature
+   git push origin tipo-de-alteracao/nome-da-feature
    ```
 
 ### 3. Pull Request
