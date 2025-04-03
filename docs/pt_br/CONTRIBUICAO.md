@@ -39,7 +39,7 @@ Agradecemos seu interesse em contribuir com o projeto CRAG API! Este documento f
    git checkout -b tipo-de-alteracao/nome-da-feature
    ```
    Possibilidades:
-   - `fix`: para correções de bugs
+   - `bugfix`: para correções de bugs
    - `feat`: para novas funcionalidades
    - `docs`: para alterações na documentação
    - `chore`: para tarefas de manutenção
@@ -77,7 +77,7 @@ Agradecemos seu interesse em contribuir com o projeto CRAG API! Este documento f
 Seguimos o padrão [Conventional Commits](https://www.conventionalcommits.org/):
 
 - `feat`: Nova funcionalidade
-- `fix`: Correção de bug
+- `bugfix`: Correção de bug
 - `docs`: Alterações na documentação
 - `refactor`: Refatoração de código sem alteração de funcionalidade
 - `chore`: Tarefas de manutenção, atualizações de dependências, etc.
