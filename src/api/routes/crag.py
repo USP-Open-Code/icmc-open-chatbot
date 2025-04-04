@@ -1,7 +1,7 @@
-from fastapi import APIRouter, HTTPException, status, Request, Depends
+from fastapi import APIRouter, HTTPException, status, Request
 
 from src.api.models import APIResponse, APIRequest
-from src.api.controllers import Guardrail
+# from src.api.controllers import Guardrail
 from src.api.controllers.crag import contr_new_message
 
 

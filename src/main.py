@@ -14,7 +14,7 @@ def create_app():
     # defining API variables
     app.database = MongoDB()
     app.llm = LLM()
-    app.llama_guard = LlamaGuard()
+    # app.llama_guard = LlamaGuard()
     app.vector_store = ChromaDB()
     app.crag = CRAG()  # Corrective RAG
 
