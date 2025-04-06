@@ -1,7 +1,6 @@
 from typing import List
 from pymongo import MongoClient
 from pymongo.collection import Collection
-from pymongo.database import Database
 
 from src.infrastructure.config import settings
 
@@ -16,11 +15,11 @@ class MongoDB:
             uri (str): MongoDB connection URI from env vars
         """
         self.client: MongoClient = None
-        self.db: Database = db_name or settings.MONGO_DB
+        self.db_name = db_name or settings.MONGO_DB
         self.uri = f"mongodb://{settings.MONGO_HOST}:{settings.MONGO_PORT}"
 
         if self.check_connection():
-            self.connect(settings.MONGO_DB)
+            self.connect()
 
     def check_connection(self) -> bool:
         """Check MongoDB connection by sending a ping command.
@@ -35,17 +34,14 @@ class MongoDB:
         except Exception as error:
             raise Exception("Error connecting to MongoDB") from error
 
-    def connect(self, db_name: str) -> None:
+    def connect(self) -> None:
         """Connect to MongoDB and select database.
-
-        Args:
-            db_name (str): Name of the database to connect to
 
         Raises:
             Exception: If connection fails or database selection fails
         """
         try:
-            self.db = self.client[db_name]
+            self.db = self.client[self.db_name]
             self.db.command('ping')
         except Exception as error:
             raise ConnectionError(f"Failed to connect to database: {error}")
@@ -67,18 +63,9 @@ class MongoDB:
     def get_collection(self, collection_name: str) -> Collection:
         """Get a MongoDB collection by name.
 
-        Args:
-            collection_name (str): Name of the collection to retrieve
-
         Returns:
             Collection: MongoDB collection object
-
-        Raises:
-            Exception: If database connection is not established
         """
-        if not self.db:
-            msg = 'Database connection not established. Call connect() first.'
-            raise Exception(msg)
         return self.db[collection_name]
 
     async def insert_one(self, collection_name: str, document: dict) -> None:

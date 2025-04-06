@@ -19,9 +19,12 @@ async def new_message(api_request: APIRequest, req: Request) -> APIResponse:
     try:
         response = await contr_new_message(
             api_request.message,
+            api_request.user_id,
             req.app.crag,
             req.app.llm,
+            req.app.database
         )
+
         return APIResponse(
             status_code=status.HTTP_200_OK,
             status_message="Message created successfully",
