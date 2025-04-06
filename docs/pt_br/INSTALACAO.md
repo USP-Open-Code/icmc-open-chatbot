@@ -5,6 +5,7 @@
 - Docker 27.5.1 ou superior
 - Docker Compose 2.32.4 ou superior
 - Git
+- Ollama 0.6.2 ou superior
 - Python 3.13 ou superior (para desenvolvimento local)
 - Poetry 2.0.1 ou superior (para desenvolvimento local)
 
