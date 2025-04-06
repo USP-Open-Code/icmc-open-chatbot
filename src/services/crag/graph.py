@@ -19,17 +19,19 @@ class CRAG:
         self.build()
 
     async def invoke(self, message: str, model: ChatOpenAI | OllamaLLM):
-        response = self.graph.invoke(
-            {
-                "messages": [
-                    {"role": "user", "content": message}
-                ],
-                "model": model,
-            }
-        )
-        return {
-            "messages": response["messages"][-1].content,
-        }
+        try:
+            response = self.graph.invoke(
+                {
+                    "messages": [
+                        {"role": "user", "content": message}
+                    ],
+                    "model": model,
+                }
+            )
+            return {"messages": response["messages"][-1].content}
+
+        except Exception as e:
+            raise ValueError(f"Error invoking CRAG: {e}")
 
     def build(self):
         try:

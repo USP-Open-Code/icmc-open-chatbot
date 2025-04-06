@@ -29,7 +29,7 @@ async def new_message(api_request: APIRequest, req: Request) -> APIResponse:
         )
 
     except Exception as e:
-        return HTTPException(
+        raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=str(e)
         )
