@@ -12,14 +12,15 @@ agent_prompt = """
 
 
 grader_prompt = """
-    Avalie os arquivos recuperados com base na pergunta do usuario:
+    Avalie os arquivos recuperados com base na pergunta do usuario,
+    sendo que sua resposta deve ser "yes", caso relevante, ou "no":
     {question}
     {document}
     {message}
 
     OBS:
         - Se houver uma tool call para a ferramenta "Most Recent",
-        a resposta deve ser OBRIGATORIAMENTE"yes".
+        a resposta deve ser OBRIGATORIAMENTE "yes".
 """
 
 
