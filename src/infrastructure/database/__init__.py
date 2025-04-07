@@ -3,7 +3,8 @@ from .mongodb.connector import MongoDB
 from .mongodb.utils import (
     get_user_details,
     block_user,
-    add_message_to_history
+    add_message_to_history,
+    get_messages_history
 )
 
 
@@ -12,5 +13,6 @@ __all__ = [
     "ChromaDB",
     "get_user_details",
     "block_user",
-    "add_message_to_history"
+    "add_message_to_history",
+    "get_messages_history"
 ]

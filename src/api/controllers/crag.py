@@ -4,7 +4,10 @@ from langchain_openai import ChatOpenAI
 
 from src.services.crag import CRAG
 from src.infrastructure.database import MongoDB
-from src.infrastructure.database import add_message_to_history
+from src.infrastructure.database import (
+    add_message_to_history,
+    get_messages_history
+)
 
 
 async def contr_new_message(
@@ -15,24 +18,26 @@ async def contr_new_message(
     database: MongoDB
 ) -> str:
 
+    history = await get_messages_history(user_id, database)
+    history.append({
+        "role": "user",
+        "content": message,
+        "timestamp": datetime.now().isoformat()
+    })
+
     response = await crag.invoke(
-        message=message,
+        messages=history,
         model=llm
     )
 
+    history.append({
+        "role": "assistant",
+        "content": response["messages"],
+        "timestamp": datetime.now().isoformat()
+    })
+
     _ = await add_message_to_history(
-        message=[
-            {
-                "role": "user",
-                "content": message,
-                "timestamp": datetime.now().isoformat()
-            },
-            {
-                "role": "assistant",
-                "content": response["messages"],
-                "timestamp": datetime.now().isoformat()
-            }
-        ],
+        messages=history,
         user_id=user_id,
         database=database
     )

@@ -1,6 +1,6 @@
 from src.infrastructure.database import MongoDB
 
-from typing import Dict
+from typing import Dict, List
 
 
 def get_user_details(user_id: str, database: MongoDB) -> dict | None:
@@ -23,24 +23,35 @@ async def block_user(user_id: str, database: MongoDB) -> None:
         )
 
 
+async def get_messages_history(
+    user_id: str,
+    database: MongoDB
+) -> List[Dict[str, str]]:
+    try:
+        response = await database.find(
+            filter_query={"user_id": user_id},
+            collection_name="chat_history"
+        )
+        return response[0]["history"] if response else []
+    except Exception as e:
+        raise ValueError(f"Error getting history: {e}")
+
+
 async def add_message_to_history(
-    message: Dict[str, str], user_id: str, database: MongoDB
+    messages: List[Dict[str, str]], user_id: str, database: MongoDB
 ) -> None:
     try:
-        if message and user_id:
+        if messages and user_id:
             history = await database.find(
                 filter_query={"user_id": user_id},
                 collection_name="chat_history"
             )
 
             if history:
-                history[0]["history"].append(message[0])
-                history[0]["history"].append(message[1])
-
                 _ = await database.update_one(
                     collection_name="chat_history",
                     filter_query={"user_id": user_id},
-                    update={"$set": {"history": history[0]["history"]}}
+                    update={"$set": {"history": messages}}
                 )
 
             else:
@@ -48,7 +59,7 @@ async def add_message_to_history(
                     collection_name="chat_history",
                     document={
                         "user_id": user_id,
-                        "history": [message[0], message[1]]
+                        "history": messages
                     }
                 )
 

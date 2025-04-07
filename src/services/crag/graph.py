@@ -1,3 +1,4 @@
+from typing import List, Dict
 from langchain_ollama import OllamaLLM
 from langchain_openai import ChatOpenAI
 from langgraph.graph import StateGraph, START, END
@@ -18,13 +19,15 @@ class CRAG:
         self.index_name = settings.INDEX_NAME
         self.build()
 
-    async def invoke(self, message: str, model: ChatOpenAI | OllamaLLM):
+    async def invoke(
+        self,
+        messages: List[Dict[str, str]],
+        model: ChatOpenAI | OllamaLLM
+    ):
         try:
             response = self.graph.invoke(
                 {
-                    "messages": [
-                        {"role": "user", "content": message}
-                    ],
+                    "messages": messages[-10:],
                     "model": model,
                 }
             )
