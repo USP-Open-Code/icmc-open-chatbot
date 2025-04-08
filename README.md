@@ -34,9 +34,8 @@ PS: Não se esqueça de alterar os [Prompts](src/services/crag/prompts.py).
 1. [Estrutura](docs/pt_br/ESTRUTURA.md)
 2. [Instalação](docs/pt_br/INSTALACAO.md)
 3. [Configurações](docs/pt_br/CONFIGURACAO.md)
-4. [Executar](docs/pt_br/EXECUTAR.md)
-5. [API](docs/pt_br/API.md)
-6. [Contribuição](docs/pt_br/CONTRIBUICAO.md)
+4. [API](docs/pt_br/API.md)
+5. [Contribuição](docs/pt_br/CONTRIBUICAO.md)
 
 ## Licença
 
