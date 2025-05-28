@@ -6,7 +6,7 @@ from .templates import AgentState, GradeDocument, FlowDecision, IsSpecificFile
 from src.infrastructure.database import ChromaDB
 from .prompts import (
     grader_prompt,
-    agent_prompt,
+    get_news_prompt,
     no_generation,
     generate_answer_prompt,
     flow_decision_prompt,
@@ -105,9 +105,9 @@ def find_references(state: AgentState):
     }
 
 
-def agent(state: AgentState):
+def get_news(state: AgentState):
     LLM = state["model"]
-    agent_msg = PromptTemplate.from_template(agent_prompt)
+    agent_msg = PromptTemplate.from_template(get_news_prompt)
     chain = agent_msg | LLM.bind_tools(
         [ChromaDB().retrieve, ChromaDB().get_most_recent]
     )

@@ -14,6 +14,14 @@ router = APIRouter(
 )
 
 
+@router.get("/", status_code=status.HTTP_200_OK)
+async def test_router() -> APIResponse:
+    return APIResponse(
+        status_code=status.HTTP_200_OK,
+        status_message="CRAG router is working"
+    )
+
+
 @router.post("/new_message", status_code=status.HTTP_200_OK)
 async def new_message(api_request: APIRequest, req: Request) -> APIResponse:
     try:

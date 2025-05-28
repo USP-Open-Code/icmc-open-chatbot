@@ -143,13 +143,14 @@ class ChromaDB:
 
     @staticmethod
     @tool("retriever")
-    def retrieve(query: str) -> List:
+    def retrieve(query: str, n: int = 10) -> List:
         """
         Método que faz uma requisição a vector store para consultar os
         documentos que podem ajudar a responder a pergunta do usuário.
 
         Args:
             query (str): A query para a vector store.
+            n (int): Quantidade de documentos a serem retornados.
 
         Returns:
             List[Document]: Uma lista de documentos recuperados
@@ -157,7 +158,33 @@ class ChromaDB:
         try:
             db = ChromaDB()
             retriever = db._as_retriever(settings.INDEX_NAME)
-            return retriever.invoke(query)
+            # Limitando a quantidade de documentos retornados para n+10
+            # Isso garante que tenhamos documentos suficientes para filtrar posteriormente
+            response = retriever.invoke(query)
+
+            created_at = [
+                (index, x["created_at"])
+                for index, x in enumerate(response.get("metadatas", []))
+            ]
+            created_at.sort(key=lambda x: x[1])
+
+            unique_titles = set()
+            unique_documents = []
+
+            for index, _ in created_at:
+                title = response["metadatas"][index].get("file_name")
+                if title and title not in unique_titles:
+                    unique_titles.add(title)
+                    unique_documents.append(
+                        {
+                            "page_content": response["documents"][index],
+                            "metadata": {"file_name": title}
+                        }
+                    )
+                if len(unique_documents) == n:
+                    break
+
+            return unique_documents
         except Exception as e:
             raise e
 
@@ -166,7 +193,7 @@ class ChromaDB:
     def get_most_recent(n: int = 5) -> List:
         """
         Método que faz uma requisição a vector store para consultar os
-        arquivos que foram adicionados mais recentemente.
+        arquivos SEM CONTEXTO ESPECÍFICO, que foram adicionados recentemente.
 
         Args:
             n (int): Quantidade de arquivos a serem retornados.

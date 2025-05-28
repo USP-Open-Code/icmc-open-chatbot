@@ -6,7 +6,7 @@ from langgraph.graph import StateGraph, START, END
 from src.infrastructure.config import settings
 from .templates import AgentState
 from .nodes import (
-    agent,
+    get_news,
     should_continue,
     generate,
     grade_documents,
@@ -46,7 +46,7 @@ class CRAG:
         try:
             builder = StateGraph(AgentState)
             builder.add_node("find_references", find_references)
-            builder.add_node("agent", agent)
+            builder.add_node("get_news", get_news)
             builder.add_node("tools", CustomToolNode())
             builder.add_node("crag", grade_documents)
             builder.add_node("generate", generate)
@@ -55,7 +55,7 @@ class CRAG:
                 START,
                 flow_decision,
                 {
-                    "general": "agent",
+                    "general": "get_news",
                     "specific": "find_references",
                     "end": "generate"
                 }
@@ -65,7 +65,7 @@ class CRAG:
 
             # MOST RECENT OR RETRIEVER
             builder.add_conditional_edges(
-                "agent",
+                "get_news",
                 should_continue,
                 {
                     "continue": "tools",

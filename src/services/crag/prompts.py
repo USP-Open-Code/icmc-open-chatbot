@@ -71,7 +71,7 @@ is_specific_file = """
 """
 
 
-agent_prompt = """
+get_news_prompt = """
     Você é um orquestrador de ferramentas, responsável por identificar a ferramenta mais adequada a ser chamada com base na pergunta do usuário. Sua tarefa é analisar a pergunta e decidir qual ferramenta utilizar:
 
     **Pergunta do Usuário:**
@@ -79,16 +79,36 @@ agent_prompt = """
 
     **Ferramentas Disponíveis:**
 
-    1. **Most Recent**: Utilize esta ferramenta para obter as notícias mais recentes ou para consultar informações dentro de um período específico. Ideal para perguntas que envolvem atualizações recentes.
-
-    2. **Retriever**: Use esta ferramenta para buscar contexto na vector store, exceto quando a pergunta se refere a documentos mais recentes. É útil para perguntas que requerem informações mais detalhadas ou históricas.
+        1. **Retriever**: Para pedidos de notícias com contexto específico.
+        2. **Most Recent**: Para pedidos de notícias sem contexto específico.
 
     **Instruções:**
 
-    - Analise a pergunta do usuário cuidadosamente.
-    - Se a pergunta se relacionar a notícias recentes, chame a ferramenta "Most Recent".
-    - Para perguntas que exigem contexto ou informações detalhadas, chame a ferramenta "Retriever".
-    - Retorne a chamada da ferramenta (tool call).
+        - Analise a pergunta do usuário cuidadosamente.
+        - Retorne a chamada da ferramenta (tool call).
+
+    **Exemplos:**
+
+        exemplo 1:
+            - Pergunta: "Quais as últimas notícias sobre Programação?"
+            - Resposta: "Retriever"
+            - Justificativa: Mesmo que trata-se das notícias mais recentes, é pedido um tema específico, portanto, a ferramenta "Retriever" é a mais adequada.
+
+        exemplo 2:
+            - Pergunta: "Quais as últimas notícias?"
+            - Resposta: "Most Recent"
+            - Justificativa: A pergunta não especifica um tema específico, portanto, a ferramenta "Most Recent" é a mais adequada.
+
+        exemplo 3:
+            - Pergunta: "Quero notícias recentes sobre o xadrez"
+            - Resposta: "Retriever"
+            - Justificativa: Mesmo que trata-se das notícias mais recentes, é pedido um tema específico, portanto, a ferramenta "Retriever" é a mais adequada.
+
+        exemplo 4:
+            - Pergunta: "Notícias sobre Hackathon"
+            - Resposta: "Retriever"
+            - Justificativa: A pergunta especifica um tema específico, portanto, a ferramenta "Retriever" é a mais adequada.
+
 """
 
 
