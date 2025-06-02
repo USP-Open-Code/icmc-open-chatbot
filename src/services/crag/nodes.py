@@ -219,7 +219,9 @@ class CustomToolNode:
             raise ValueError("No messages found in inputs")
 
         for tool_call in message.tool_calls:
-            tool_result = self.tools[tool_call["name"]].invoke(
+            # Esse lower se deve a falta de padrão no retorno, sendo
+            # que o LLM estava retornando o nome da ferramente em title_case
+            tool_result = self.tools[tool_call["name"].lower()].invoke(
                 tool_call["args"]
             )
 
