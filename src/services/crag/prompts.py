@@ -86,6 +86,7 @@ get_news_prompt = """
 
         - Analise a pergunta do usuário cuidadosamente.
         - Retorne a chamada da ferramenta (tool call).
+        - Para o "retriever", gere uma query para fazer a busca na vectorstore.
 
     **Exemplos:**
 
@@ -109,6 +110,10 @@ get_news_prompt = """
             - Resposta: "Retriever"
             - Justificativa: A pergunta especifica um tema específico, portanto, a ferramenta "Retriever" é a mais adequada.
 
+    **OBS**
+        - A ferramenta retriever busca notícia de algum contexto específico e ordena elas. Logo, se o pedido for para notícias recentes de
+        algum tema, deve chamar a ferramenta retriever, passando uma query pertinente. Assim, a ferramenta consulta o tema e ordena as notícias.
+        - Ao gerar uma query para o retriever, não precisa mencionar a recência, visto que o próprio código ordena os resultados.
 """
 
 
