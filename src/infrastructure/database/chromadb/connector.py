@@ -52,16 +52,16 @@ class ChromaDB:
         except Exception:
             return None
 
-    def _as_retriever(self, collection_name: str = None) -> dict:
+    def _as_retriever(self, collection_name: str = None, k: int = 10) -> dict:
         """
         Cria um retriever adaptado à dimensão da coleção
         """
         vector_store = Chroma(
             client=self.client,
             collection_name=collection_name or self.collection_name,
-            embedding_function=self.embedding_function
+            embedding_function=self.embedding_function,
         )
-        retriever = vector_store.as_retriever()
+        retriever = vector_store.as_retriever(k=k)
 
         return retriever
 
@@ -157,14 +157,18 @@ class ChromaDB:
         """
         try:
             db = ChromaDB()
-            retriever = db._as_retriever(settings.INDEX_NAME)
+            retriever = db._as_retriever(
+                collection_name=settings.INDEX_NAME,
+                k=n+10
+            )
             # Limitando a quantidade de documentos retornados para n+10
-            # Isso garante que tenhamos documentos suficientes para filtrar posteriormente
+            # Isso garante que tenhamos documentos suficientes para filtrar
+            # posteriormente
             response = retriever.invoke(query)
 
             created_at = [
-                (index, x["created_at"])
-                for index, x in enumerate(response.get("metadatas", []))
+                (index, x.metadata.get("created_at"))
+                for index, x in enumerate(response)
             ]
             created_at.sort(key=lambda x: x[1])
 
@@ -172,12 +176,12 @@ class ChromaDB:
             unique_documents = []
 
             for index, _ in created_at:
-                title = response["metadatas"][index].get("file_name")
+                title = response[index].metadata.get("file_name")
                 if title and title not in unique_titles:
                     unique_titles.add(title)
                     unique_documents.append(
                         {
-                            "page_content": response["documents"][index],
+                            "page_content": response[index].page_content,
                             "metadata": {"file_name": title}
                         }
                     )
