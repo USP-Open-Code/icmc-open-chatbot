@@ -61,7 +61,7 @@ class ChromaDB:
             collection_name=collection_name or self.collection_name,
             embedding_function=self.embedding_function,
         )
-        retriever = vector_store.as_retriever(k=k)
+        retriever = vector_store.as_retriever(search_kwargs={"k": k})
 
         return retriever
 
