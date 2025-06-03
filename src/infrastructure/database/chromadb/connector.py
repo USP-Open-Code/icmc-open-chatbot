@@ -164,7 +164,7 @@ class ChromaDB:
             # Limitando a quantidade de documentos retornados para n+10
             # Isso garante que tenhamos documentos suficientes para filtrar
             # posteriormente
-            response = retriever.invoke(query)
+            response = retriever.get_relevant_documents(query)
 
             created_at = [
                 (index, x.metadata.get("created_at"))
