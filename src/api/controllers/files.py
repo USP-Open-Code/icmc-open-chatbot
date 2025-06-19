@@ -1,5 +1,7 @@
 from src.services.document_reader import DocumentReader
 from src.infrastructure.database import ChromaDB
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_core.documents import Document
 from src.infrastructure.config import settings
 from src.api.models import FileMetadata
 
@@ -17,10 +19,20 @@ async def controller_upload_file(
         metadata["extension"] = content["extension"]
         metadata["file_name"] = content["name"]
 
+        langchain_docs = []
+
+        for j, text_content in enumerate(content["content"]):
+                    doc = Document(
+                        page_content=text_content,
+                        metadata={
+                            'extension' : content["extension"],
+                            'file_name' : content["name"]
+
+                            }
+                    )
+                    langchain_docs.append(doc)
         await vector_store.add_documents(
-            documents=content["content"],
-            collection_name=settings.INDEX_NAME,
-            metadatas=[metadata for _ in content["content"]],
+            documents=langchain_docs
         )
         return True
     except Exception as e:
