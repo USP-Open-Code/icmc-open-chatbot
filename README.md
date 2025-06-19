@@ -52,6 +52,7 @@ graph TD
 ## Autor
 
 **[@CuriousGu](https://www.github.com/CuriousGu) 🇧🇷**
+**[@PrimeRibs2501](https://www.github.com/PrimeRibs2501) 🇧🇷**
 
 ## Docs
 1. [Estrutura](docs/pt_br/ESTRUTURA.md)
@@ -69,4 +70,7 @@ Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
 ## Contatos
 - Email: gustavo_ortega@usp.br
 - Linkedin: [Gustavo M. Ortega](https://www.linkedin.com/in/gustavomendoncaortega/)
+
+- Email: pedro.hbueno03@usp.br
+- Linkedin: [Pedro H. B. Ribeiro](https://www.linkedin.com/in//pedrohenriquebuenoribeiro)
 

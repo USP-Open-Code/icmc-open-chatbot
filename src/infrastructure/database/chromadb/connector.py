@@ -21,6 +21,11 @@ class ChromaDB:
         )
         try:
             self.client = self._connect()
+            self.vector_store = Chroma(
+                client=self.client,
+                collection_name=self.collection_name,
+                embedding_function=self.embedding_function,
+            )
             self.retriever = self._as_retriever()
         except Exception as e:
             raise ConnectionError(f"Failed to connect to ChromaDB: {e}")
@@ -56,35 +61,22 @@ class ChromaDB:
         """
         Cria um retriever adaptado à dimensão da coleção
         """
-        vector_store = Chroma(
-            client=self.client,
-            collection_name=collection_name or self.collection_name,
-            embedding_function=self.embedding_function,
-        )
-        retriever = vector_store.as_retriever(k=k)
+
+        retriever = self.vector_store.as_retriever(k=k)
 
         return retriever
 
     async def add_documents(
         self,
         documents: List[str],
-        collection_name: str,
-        metadatas: Optional[List[dict]] = None,
     ):
         """
         Adiciona documentos à coleção com dimensão configurada no .env
         """
-        if not self.collection or self.collection.name != collection_name:
-            self.collection = self._create_collection(collection_name)
-
-        embeddings = self.embedding_function.embed_documents(documents)
-
-        return self.collection.add(
-            documents=documents,
-            embeddings=embeddings,
-            metadatas=metadatas,
-            ids=[str(uuid.uuid4()) for _ in enumerate(documents)],
-        )
+        return self.vector_store.add_documents(
+                documents=documents,
+                ids=[str(uuid.uuid4()) for _ in enumerate(documents)],
+            )
 
     async def list_collections(self):
         return self.client.list_collections()
@@ -94,7 +86,7 @@ class ChromaDB:
         collection_name: str
     ):
         if collection := self.client.get_collection(collection_name):
-            return collection.get()
+            return collection.get(include=["metadatas", "documents", "embeddings"])
         return []
 
     async def query_documents(
@@ -164,7 +156,7 @@ class ChromaDB:
             # Limitando a quantidade de documentos retornados para n+10
             # Isso garante que tenhamos documentos suficientes para filtrar
             # posteriormente
-            response = retriever.invoke(query)
+            response = retriever.get_relevant_documents(query)
 
             created_at = [
                 (index, x.metadata.get("created_at"))
